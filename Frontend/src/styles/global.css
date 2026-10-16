@@ -272,3 +272,5 @@ textarea:focus {
   text-align: center;
   color: var(--color-muted);
 }
+
+.resend-btn { margin-bottom: 1rem; }
