@@ -274,3 +274,41 @@ textarea:focus {
 }
 
 .resend-btn { margin-bottom: 1rem; }
+
+/* ---------- Profile ---------- */
+.muted { color: var(--color-muted); }
+
+.profile-card { max-width: 640px; margin: 0 auto; }
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-meta h1 { margin-bottom: 0.25rem; }
+.profile-meta p { margin-bottom: 0.25rem; }
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f5ee;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.btn-small { padding: 0.35rem 0.8rem; font-size: 0.875rem; margin-top: 0.5rem; }
+
+.form-actions { display: flex; gap: 0.5rem; }
+
+@media (max-width: 600px) {
+  .profile-header { flex-direction: column; text-align: center; }
+}
