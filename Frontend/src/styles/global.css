@@ -495,3 +495,50 @@ textarea:focus {
   font-weight: 600;
   color: var(--color-primary);
 }
+
+/* ---------- Ground discovery ---------- */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+.filters .form-group { margin-bottom: 0; }
+.filters .checkbox-item { padding-bottom: 0.6rem; }
+
+.grounds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.listing-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.listing-card .carousel { border-radius: 0; }
+.listing-body { padding: 1rem; }
+.listing-body p { margin-bottom: 0.35rem; }
+.listing-body .btn-block { margin-top: 0.75rem; }
+
+.empty-state { text-align: center; padding: 2rem 1rem; }
+
+.back-link { display: inline-block; text-decoration: none; font-weight: 600; }
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.facts { list-style: none; padding: 0; margin: 1rem 0; }
+.facts li { padding: 0.4rem 0; border-bottom: 1px solid var(--color-border); }
+
+.pre-wrap { white-space: pre-wrap; }
+
+@media (max-width: 700px) {
+  .details-grid { grid-template-columns: 1fr; }
+}

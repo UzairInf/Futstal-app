@@ -12,6 +12,8 @@ import NotFound from './pages/NotFound.jsx'
 import MyGrounds from './pages/owner/MyGrounds.jsx'
 import GroundCreate from './pages/owner/GroundCreate.jsx'
 import GroundEdit from './pages/owner/GroundEdit.jsx'
+import Grounds from './pages/Grounds.jsx'
+import GroundDetails from './pages/GroundDetails.jsx'
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/become-owner" element={<BecomeOwner />} />
+          <Route path="/grounds" element={<Grounds />} />
+          <Route path="/grounds/:id" element={<GroundDetails />} />
 
           <Route element={<RoleRoute allow={['owner']} />}>
             <Route path="/owner/grounds" element={<MyGrounds />} />

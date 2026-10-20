@@ -33,3 +33,5 @@ export const AMENITIES = [
 ]
 
 export const AMENITY_LABELS = Object.fromEntries(AMENITIES.map((a) => [a.value, a.label]))
+
+export const PRICE_LIMITS = [2000, 3000, 4000, 5000, 6000, 8000, 10000]

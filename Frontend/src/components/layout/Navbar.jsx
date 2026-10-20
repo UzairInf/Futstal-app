@@ -25,6 +25,7 @@ export default function Navbar() {
 
                 <nav className="navbar-links">
                     <NavLink to="/" end className="nav-link">Home</NavLink>
+                    <NavLink to="/grounds" className="nav-link">Grounds</NavLink>
 
                     {!loading && !user && (
                         <>
