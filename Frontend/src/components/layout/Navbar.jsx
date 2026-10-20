@@ -8,13 +8,14 @@ export default function Navbar() {
     const navigate = useNavigate()
 
     async function handleLogout() {
+        navigate('/login', { replace: true, state: null })
+
         const { error } = await signOut()
         if (error) {
             toast.error(error.message)
             return
         }
         toast.success('Logged out')
-        navigate('/login')
     }
 
     return (

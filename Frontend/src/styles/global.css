@@ -312,3 +312,32 @@ textarea:focus {
 @media (max-width: 600px) {
   .profile-header { flex-direction: column; text-align: center; }
 }
+
+/* ---------- Roles, badges, requests ---------- */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  background: var(--color-border);
+  color: var(--color-text);
+}
+.badge-owner,
+.badge-approved { background: #e8f5ee; color: var(--color-primary); }
+.badge-admin { background: #e3ecf7; color: #2c5f8a; }
+.badge-rejected { background: #fdecec; color: #8e1f1f; }
+
+.stack > * + * { margin-top: 1rem; }
+
+.request-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.request-phone { margin-bottom: 0.5rem; }
+.request-message { white-space: pre-wrap; }
+.request-actions { margin-top: 0.75rem; }
