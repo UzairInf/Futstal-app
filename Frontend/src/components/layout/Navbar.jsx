@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../../hooks/useToast.js'
 
 export default function Navbar() {
-    const { user, loading, signOut } = useAuth()
+    const { user, profile, loading, signOut } = useAuth()
     const toast = useToast()
     const navigate = useNavigate()
 
@@ -35,6 +35,9 @@ export default function Navbar() {
 
                     {!loading && user && (
                         <>
+                            {profile?.role === 'owner' && (
+                                <NavLink to="/owner/grounds" className="nav-link">My grounds</NavLink>
+                            )}
                             <NavLink to="/profile" className="nav-link">Profile</NavLink>
                             <button type="button" className="btn btn-outline" onClick={handleLogout}>
                                 Log out

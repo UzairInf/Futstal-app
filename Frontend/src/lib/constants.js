@@ -17,3 +17,19 @@ export const AREAS = [
   'Scheme 33',
   'Other',
 ]
+
+export const TEAM_SIZES = [5, 6, 7, 8]
+
+export const AMENITIES = [
+  { value: 'floodlights', label: 'Floodlights' },
+  { value: 'parking', label: 'Parking' },
+  { value: 'washroom', label: 'Washroom' },
+  { value: 'changing_room', label: 'Changing room' },
+  { value: 'drinking_water', label: 'Drinking water' },
+  { value: 'cafe', label: 'Café' },
+  { value: 'seating', label: 'Seating area' },
+  { value: 'first_aid', label: 'First aid' },
+  { value: 'wifi', label: 'Wi-Fi' },
+]
+
+export const AMENITY_LABELS = Object.fromEntries(AMENITIES.map((a) => [a.value, a.label]))

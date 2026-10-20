@@ -9,6 +9,9 @@ import Profile from './pages/Profile.jsx'
 import BecomeOwner from './pages/BecomeOwner.jsx'
 import AdminOwnerRequests from './pages/AdminOwnerRequests.jsx'
 import NotFound from './pages/NotFound.jsx'
+import MyGrounds from './pages/owner/MyGrounds.jsx'
+import GroundCreate from './pages/owner/GroundCreate.jsx'
+import GroundEdit from './pages/owner/GroundEdit.jsx'
 
 export default function App() {
   return (
@@ -21,6 +24,12 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/become-owner" element={<BecomeOwner />} />
+
+          <Route element={<RoleRoute allow={['owner']} />}>
+            <Route path="/owner/grounds" element={<MyGrounds />} />
+            <Route path="/owner/grounds/new" element={<GroundCreate />} />
+            <Route path="/owner/grounds/:id/edit" element={<GroundEdit />} />
+          </Route>
 
           <Route element={<RoleRoute allow={['admin']} />}>
             <Route path="/admin/owner-requests" element={<AdminOwnerRequests />} />
