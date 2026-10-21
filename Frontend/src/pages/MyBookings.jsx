@@ -5,7 +5,7 @@ import { useToast } from '../hooks/useToast.js'
 import { PageLoader, Spinner } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import { listMyBookings, cancelBooking } from '../lib/bookingsApi.js'
-import { addHours, formatDay, formatTime, formatRange } from '../lib/karachiTime.js'
+import { formatDay, formatTime, formatRange } from '../lib/karachiTime.js'
 
 const CANCEL_WINDOW_MS = 12 * 3600e3
 
