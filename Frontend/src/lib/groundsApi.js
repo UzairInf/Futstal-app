@@ -111,7 +111,15 @@ export async function deleteGround(ground) {
         .delete()
         .eq('id', ground.id)
         .select('id')
-    if (error) throw error
+    if (error) {
+        // 23503 = foreign key: bookings still point at this ground
+        if (error.code === '23503') {
+            throw new Error(
+                "This ground has bookings, so it can't be deleted. Deactivate it instead to stop new bookings."
+            )
+        }
+        throw error
+    }
     if (data.length === 0) throw new Error('This ground could not be deleted.')
     await removePhotos(ground.photo_paths)
 }

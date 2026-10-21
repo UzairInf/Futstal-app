@@ -6,24 +6,14 @@ import { PageLoader, Spinner } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import { listMyBookings, cancelBooking } from '../lib/bookingsApi.js'
 import { formatDay, formatTime, formatRange } from '../lib/karachiTime.js'
+import { BOOKING_TABS, bookingBadge, bucketOf, groupBookings } from '../lib/bookingStatus.js'
 
 const CANCEL_WINDOW_MS = 12 * 3600e3
-
-const TABS = [
-  { key: 'upcoming', label: 'Upcoming' },
-  { key: 'past', label: 'Past' },
-  { key: 'cancelled', label: 'Cancelled' },
-]
 
 const EMPTY_TEXT = {
   upcoming: 'You have no upcoming bookings.',
   past: 'No past bookings yet.',
   cancelled: 'No cancelled bookings.',
-}
-
-function bucketOf(booking, now) {
-  if (booking.status === 'cancelled') return 'cancelled'
-  return new Date(booking.end_at).getTime() > now ? 'upcoming' : 'past'
 }
 
 function BookingCard({ booking, now, userId, busy, onCancel }) {
@@ -36,11 +26,7 @@ function BookingCard({ booking, now, userId, busy, onCancel }) {
   const inProgress = bucket === 'upcoming' && startMs <= now
   const canCancel = bucket === 'upcoming' && startMs - CANCEL_WINDOW_MS >= now
 
-  let badge
-  if (bucket === 'cancelled') badge = { cls: 'badge-rejected', text: 'Cancelled' }
-  else if (inProgress) badge = { cls: 'badge-admin', text: 'Happening now' }
-  else if (bucket === 'upcoming') badge = { cls: 'badge-active', text: 'Confirmed' }
-  else badge = { cls: 'badge-inactive', text: 'Completed' }
+  const badge = bookingBadge(bucket, inProgress)
 
   return (
     <div className="card booking-card">
@@ -146,9 +132,7 @@ export default function MyBookings() {
   if (state.loading) return <PageLoader />
   if (state.error) return <ErrorMessage message={state.error} onRetry={retry} />
 
-  const grouped = { upcoming: [], past: [], cancelled: [] }
-  for (const b of state.bookings) grouped[bucketOf(b, state.now)].push(b)
-  grouped.upcoming.reverse() // fetched newest first; show the soonest upcoming booking first
+  const grouped = groupBookings(state.bookings, state.now)
 
   const visible = grouped[tab]
 
@@ -157,7 +141,7 @@ export default function MyBookings() {
       <h1>My bookings</h1>
 
       <div className="tabs" role="tablist">
-        {TABS.map((t) => (
+        {BOOKING_TABS.map((t) => (
           <button
             key={t.key}
             type="button"

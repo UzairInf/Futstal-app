@@ -731,3 +731,4 @@ textarea:focus {
 .booking-head h3 { margin: 0; }
 .booking-when { font-weight: 600; }
 .booking-ref { margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-muted); }
+.cancel-form { margin-top: 0.75rem; }

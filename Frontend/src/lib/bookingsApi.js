@@ -41,3 +41,14 @@ export async function cancelBooking(id, reason = null) {
   if (error) throw error
   return data
 }
+
+export async function listOwnerBookings(ownerId) {
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('*, grounds!inner(name, area, address, owner_id)')
+    .eq('grounds.owner_id', ownerId) // an owner can also be a player elsewhere, so filter explicitly
+    .order('start_at', { ascending: false })
+    .limit(100) // pagination comes in Phase 11
+  if (error) throw error
+  return data
+}

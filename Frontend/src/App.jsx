@@ -12,6 +12,7 @@ import NotFound from './pages/NotFound.jsx'
 import MyGrounds from './pages/owner/MyGrounds.jsx'
 import GroundCreate from './pages/owner/GroundCreate.jsx'
 import GroundEdit from './pages/owner/GroundEdit.jsx'
+import OwnerBookings from './pages/owner/OwnerBookings.jsx'
 import Grounds from './pages/Grounds.jsx'
 import GroundDetails from './pages/GroundDetails.jsx'
 import MyBookings from './pages/MyBookings.jsx'
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/owner/grounds" element={<MyGrounds />} />
             <Route path="/owner/grounds/new" element={<GroundCreate />} />
             <Route path="/owner/grounds/:id/edit" element={<GroundEdit />} />
+            <Route path="/owner/bookings" element={<OwnerBookings />} />
           </Route>
 
           <Route element={<RoleRoute allow={['admin']} />}>
