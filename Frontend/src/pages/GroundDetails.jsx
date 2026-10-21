@@ -6,6 +6,7 @@ import PhotoCarousel from '../components/grounds/PhotoCarousel.jsx'
 import { AMENITY_LABELS } from '../lib/constants.js'
 import { formatHours } from '../lib/groundHours.js'
 import { getActiveGround } from '../lib/groundsApi.js'
+import BookingForm from '../components/bookings/BookingForm.jsx'
 
 export default function GroundDetails() {
   const { id } = useParams()
@@ -85,6 +86,8 @@ export default function GroundDetails() {
           )}
         </div>
       </div>
+
+      <BookingForm ground={g} />
 
       {g.description && (
         <div className="card">
