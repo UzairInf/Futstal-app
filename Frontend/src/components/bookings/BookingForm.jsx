@@ -10,6 +10,7 @@ import {
   weekdayShort, monthShort, dayOfMonth,
   formatHour, formatDay, formatRange,
 } from '../../lib/karachiTime.js'
+import { Link } from 'react-router-dom'
 
 const CANCEL_WINDOW_MS = 12 * 3600e3
 const MAX_HOURS = 24
@@ -223,6 +224,7 @@ export default function BookingForm({ ground }) {
               Rs {confirmed.total_price.toLocaleString()}
             </div>
           </div>
+          <Link to="/bookings" className="btn btn-outline btn-small">View my bookings</Link>
         </div>
       )}
 

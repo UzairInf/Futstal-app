@@ -39,6 +39,7 @@ export default function Navbar() {
                             {profile?.role === 'owner' && (
                                 <NavLink to="/owner/grounds" className="nav-link">My grounds</NavLink>
                             )}
+                            <NavLink to="/bookings" className="nav-link">My bookings</NavLink>
                             <NavLink to="/profile" className="nav-link">Profile</NavLink>
                             <button type="button" className="btn btn-outline" onClick={handleLogout}>
                                 Log out

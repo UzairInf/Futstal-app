@@ -14,6 +14,7 @@ import GroundCreate from './pages/owner/GroundCreate.jsx'
 import GroundEdit from './pages/owner/GroundEdit.jsx'
 import Grounds from './pages/Grounds.jsx'
 import GroundDetails from './pages/GroundDetails.jsx'
+import MyBookings from './pages/MyBookings.jsx'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/become-owner" element={<BecomeOwner />} />
           <Route path="/grounds" element={<Grounds />} />
+          <Route path="/bookings" element={<MyBookings />} />
           <Route path="/grounds/:id" element={<GroundDetails />} />
 
           <Route element={<RoleRoute allow={['owner']} />}>
