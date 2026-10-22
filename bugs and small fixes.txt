@@ -1,0 +1,8 @@
+ bugs and small fixex (TO DO)
+ 
+ 1.ground shows the area name entered when registering and the maps area name so it doubles up
+ (open screenshots bug 1)
+ 
+ 2.when visitng as anonymous if we click grounds it should first show "log in in to continue" but we are directly redirected to login 
+ 
+ 3. fix google maps redirection not showing actual location

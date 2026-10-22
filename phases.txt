@@ -1,0 +1,206 @@
+# Futsal Opponent Finder Karachi
+## Development Roadmap & Team Instructions
+
+**Tech stack:** React + Vite, Supabase Auth, PostgreSQL, Supabase Storage, and Vercel.
+
+**Development rule:** Complete each phase, test it, review the code, and push it to GitHub before beginning the next phase. Add database tables and policies incrementally as required instead of implementing every feature at once.
+
+---
+
+## PHASE 0: Project Foundation
+
+**Goal:** Prepare the project so new features can be added without creating a mess.
+
+Tasks:
+1. Set up the React + Vite project and GitHub repository.
+2. Configure Supabase and environment variables.
+3. Create the Supabase client file.
+4. Set up React Router and a clean folder structure.
+5. Create a shared layout, navigation bar, and global CSS.
+6. Establish consistent loading, error, and success messages.
+
+**Completion criteria:** The app runs locally, connects to Supabase, and is deployed to Vercel without exposing secret keys.
+
+## PHASE 1: Authentication
+
+**Goal:** Allow people to create accounts and log in.
+
+Tasks:
+1. Build the signup page.
+2. Build the login page.
+3. Implement logout.
+4. Persist authentication across page refreshes.
+5. Add protected routes.
+6. Automatically create a profile when an account is created.
+7. Handle invalid credentials, duplicate accounts, and email verification.
+
+**Completion criteria:** Users can register, log in, log out, and refresh the page without unexpectedly losing their session.
+
+## PHASE 2: User Profiles and Permissions
+
+**Goal:** Establish the identity and permissions of each user.
+
+Tasks:
+1. Build the profile page.
+2. Allow users to update their name, area, bio, and avatar.
+3. Display profile information.
+4. Establish player and ground-owner permissions.
+5. Create a secure owner-approval process.
+6. Prevent users from granting themselves owner privileges.
+
+**Completion criteria:** Profile changes persist in the database, and users cannot access owner-only features without authorization.
+
+## PHASE 3: Ground Registration and Management
+
+**Goal:** Allow approved ground owners to register and manage their futsal grounds.
+
+Tasks:
+1. Build the ground registration form.
+2. Collect the ground name, area, address, hourly price, team size, opening hours, amenities, and description.
+3. Allow ground owners to upload photos.
+4. Display the owner's registered grounds in a dashboard.
+5. Implement edit, deactivate, and delete actions.
+6. Ensure owners can manage only their own grounds.
+
+**Completion criteria:** An approved owner can create and manage grounds, while other users cannot modify them.
+
+## PHASE 4: Ground Discovery
+
+**Goal:** Allow players to find suitable futsal grounds.
+
+Tasks:
+1. Build the grounds listing page.
+2. Display ground photos, location, price, team size, and amenities.
+3. Add search by area.
+4. Add filters for price and team size.
+5. Build a ground details page.
+6. Add empty states, loading indicators, and error handling.
+
+**Completion criteria:** Players can discover grounds and view their details using real database data.
+
+## PHASE 5: Ground Booking
+
+**Goal:** Let players book available time slots.
+
+Tasks:
+1. Build a booking form with date, start time, duration, and notes.
+2. Display available time slots.
+3. Calculate the booking price using trusted database or backend logic.
+4. Create bookings in Supabase.
+5. Prevent overlapping bookings using the database constraint.
+6. Build the player's booking history.
+7. Build the owner's booking management page.
+8. Implement booking cancellation and clearly defined status transitions.
+
+**Completion criteria:** Players can book available slots, owners can view bookings for their grounds, and simultaneous requests cannot double-book the same slot.
+
+## PHASE 6: Find an Opponent
+
+**Goal:** Let players find another team for a booking they already have.
+
+Tasks:
+1. Build the Find Opponent page.
+2. Display open match requests.
+3. Show the ground, date, time, team size, area, and skill level.
+4. Allow players to publish a request linked to their existing booking.
+5. Add filters for area, skill level, date, and team size.
+6. Allow request owners to close their requests.
+7. Prevent requests for invalid, cancelled, or expired bookings.
+
+**Completion criteria:** A player with a valid booking can publish a request, and other players can discover suitable open requests.
+
+## PHASE 7: Joining Requests and Confirming Matches
+
+**Goal:** Allow another player to respond to an opponent request and let the host select an opponent.
+
+Tasks:
+1. Add the option to request to join a match.
+2. Allow the host to view incoming responses.
+3. Prevent users from responding to their own requests.
+4. Prevent duplicate responses from the same user.
+5. Allow the host to accept one response.
+6. Automatically decline other pending responses when one is accepted.
+7. Create the match record atomically using a database function.
+8. Show the confirmed match to both participants.
+
+**Completion criteria:** Only one opponent can be accepted for a request, even when multiple actions happen at nearly the same time.
+
+## PHASE 8: Match History and Status
+
+**Goal:** Give players a record of their matches.
+
+Tasks:
+1. Build a My Matches page.
+2. Display upcoming matches and past matches.
+3. Handle cancellation and completion rules.
+4. Automatically complete eligible matches after their booking ends.
+5. Show the opponent and ground details.
+6. Prevent unauthorized changes to match status.
+
+**Completion criteria:** Both participants can view the correct match history and status.
+
+## PHASE 9: Ratings and Reputation
+
+**Goal:** Build trust between players.
+
+Tasks:
+1. Allow eligible participants to rate their opponents after completed matches.
+2. Support ratings from one to five.
+3. Add an optional review.
+4. Record whether the opponent showed up.
+5. Calculate average ratings and reputation.
+6. Display public player statistics.
+7. Prevent duplicate ratings and fake ratings from nonparticipants.
+
+**Completion criteria:** Reputation is calculated from legitimate match history and ratings.
+
+## PHASE 10: Notifications
+
+**Goal:** Keep players informed when something happens.
+
+Tasks:
+1. Notify the host when someone requests to join.
+2. Notify players when their response is accepted.
+3. Add a notifications page or dropdown.
+4. Mark notifications as read.
+5. Add realtime updates using Supabase Realtime.
+6. Test notification permissions.
+
+**Completion criteria:** Relevant users receive the correct in-app notifications without seeing anyone else's private notifications.
+
+## PHASE 11: Final Testing, Security, and Launch
+
+**Goal:** Prepare the app for real users.
+
+Tasks:
+1. Test all features with separate player and owner accounts.
+2. Audit every table's Row Level Security policies.
+3. Test unauthorized reads, inserts, updates, and deletes.
+4. Test booking conflicts and simultaneous opponent acceptances.
+5. Validate form inputs and handle database errors.
+6. Add pagination and optimize expensive queries.
+7. Make the app responsive on mobile.
+8. Test the production build and deployed environment.
+9. Add basic abuse reporting and an owner-management process.
+10. Document deployment and database migrations.
+
+**Completion criteria:** Core features work reliably, permissions have been tested, and the production build is ready for a controlled launch.
+
+---
+
+## Rules for Every Developer
+
+1. Work only on the current phase unless a dependency requires an earlier change.
+2. Never hardcode fake data into a finished feature.
+3. Keep components, pages, and database logic organized.
+4. Never put Supabase service-role keys in frontend code.
+5. Enforce important permissions and validations in the database or trusted backend, not only in React.
+6. Test success cases, failure cases, and unauthorized access.
+7. Commit working changes to GitHub before moving on.
+8. Update this roadmap when scope changes.
+
+## Definition of Done
+
+A feature is complete only when the UI works, real database operations work, errors are handled, permissions are tested, and the changes have been committed.
+
+**Initial release target:** Complete Phases 0–8 first. Add ratings, reputation, and notifications after the core booking and opponent-finding workflow is stable.
