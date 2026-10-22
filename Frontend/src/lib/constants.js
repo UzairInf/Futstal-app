@@ -49,3 +49,7 @@ export const SKILL_LABELS = Object.fromEntries(SKILL_LEVELS.map((s) => [s.value,
 
 // Match durations in minutes: 30 minutes up to 6 hours
 export const DURATION_OPTIONS = Array.from({ length: 12 }, (_, i) => (i + 1) * 30)
+
+// Phase 9: ratings
+export const MIN_RATINGS_FOR_REPUTATION = 3
+export const REVIEW_MAX_LENGTH = 500

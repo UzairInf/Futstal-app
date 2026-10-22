@@ -833,3 +833,30 @@ textarea:focus {
 }
 .contact-box p { margin: 0.25rem 0 0; }
 .contact-box a { color: inherit; font-weight: 600; }
+
+/* Ratings (Phase 9) */
+.stars { color: #d9a400; letter-spacing: 0.1em; white-space: nowrap; }
+.star-input { display: flex; gap: 0.15rem; }
+.star-btn {
+  background: none;
+  border: 0;
+  padding: 0 0.1rem;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--color-border);
+  cursor: pointer;
+}
+.star-btn.on { color: #d9a400; }
+.star-btn:disabled { cursor: default; opacity: 0.6; }
+.star-btn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 4px; }
+.rating-box {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+.rating-box p { margin: 0.25rem 0 0; }
+.radio-row { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.radio-row label { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: normal; margin-bottom: 0; }
+.radio-row input { width: auto; }

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../../hooks/useToast.js'
 import { PageLoader, Spinner } from '../../components/ui/Spinner.jsx'
 import ErrorMessage from '../../components/ui/ErrorMessage.jsx'
 import Avatar from '../../components/ui/Avatar.jsx'
 import RequestCard from '../../components/opponents/RequestCard.jsx'
 import MatchContact from '../../components/opponents/MatchContact.jsx'
+import RateMatchForm from '../../components/ratings/RateMatchForm.jsx'
+import { Stars } from '../../components/ratings/StarRating.jsx'
 import { listMyMatches, cancelMatch } from '../../lib/matchesApi.js'
 import { formatDay, formatRange } from '../../lib/karachiTime.js'
 import {
@@ -41,7 +44,49 @@ function cancelledText(m) {
   return `Your opponent cancelled this match${when}.`
 }
 
-function MatchItem({ match, now, busy, onCancel }) {
+// Past matches: rate your opponent, and see the rating they gave you
+function MatchRatings({ match, opponent, onChanged }) {
+  const [rating, setRating] = useState(false)
+
+  return (
+    <>
+      {match.my_stars != null ? (
+        <div className="rating-box">
+          <strong>Your rating</strong>
+          <p>
+            <Stars value={match.my_stars} />{' '}
+            {match.my_showed_up ? `${opponent} showed up` : `${opponent} did not show up`}
+          </p>
+          {match.my_review && <p className="pre-wrap muted">{match.my_review}</p>}
+        </div>
+      ) : rating ? (
+        <RateMatchForm
+          matchId={match.match_id}
+          opponentName={opponent}
+          onRated={onChanged}
+          onClose={() => setRating(false)}
+        />
+      ) : (
+        <button type="button" className="btn btn-small" onClick={() => setRating(true)}>
+          Rate {opponent}
+        </button>
+      )}
+
+      {match.their_stars != null && (
+        <div className="rating-box">
+          <strong>{opponent} rated you</strong>
+          <p>
+            <Stars value={match.their_stars} />{' '}
+            {match.their_showed_up ? 'Said you showed up' : 'Said you did not show up'}
+          </p>
+          {match.their_review && <p className="pre-wrap muted">{match.their_review}</p>}
+        </div>
+      )}
+    </>
+  )
+}
+
+function MatchItem({ match, now, busy, onCancel, onChanged }) {
   const bucket = bucketOf(match, now)
   const badge = matchBadge(bucket, isInProgress(match, now))
   const opponent = match.opponent_name || 'Player'
@@ -55,7 +100,14 @@ function MatchItem({ match, now, busy, onCancel }) {
       <div className="host-row">
         <Avatar url={match.opponent_avatar_url} name={opponent} size={28} />
         <span>
-          Opponent: <strong>{opponent}</strong>
+          Opponent:{' '}
+          <strong>
+            {match.opponent_id ? (
+              <Link to={`/players/${match.opponent_id}`}>{opponent}</Link>
+            ) : (
+              opponent
+            )}
+          </strong>
           {match.opponent_area && <span className="muted"> · {match.opponent_area}</span>}
         </span>
       </div>
@@ -74,6 +126,10 @@ function MatchItem({ match, now, busy, onCancel }) {
         />
       )}
 
+      {bucket === 'past' && (
+        <MatchRatings match={match} opponent={opponent} onChanged={onChanged} />
+      )}
+
       {canCancel(match, now) && (
         <button
           type="button"
@@ -89,6 +145,7 @@ function MatchItem({ match, now, busy, onCancel }) {
 }
 
 export default function MyMatches() {
+  const { user } = useAuth()
   const toast = useToast()
 
   const [state, setState] = useState({ loading: true, matches: [], now: 0, error: '' })
@@ -146,6 +203,7 @@ export default function MyMatches() {
           <Link to="/opponents" className="btn">Find opponents</Link>
           <Link to="/opponents/mine" className="btn btn-outline">My requests</Link>
           <Link to="/opponents/responses" className="btn btn-outline">My responses</Link>
+          <Link to={`/players/${user.id}`} className="btn btn-outline">My public profile</Link>
         </div>
       </div>
 
@@ -179,6 +237,7 @@ export default function MyMatches() {
             now={state.now}
             busy={busyId === m.match_id}
             onCancel={handleCancel}
+            onChanged={() => setReloadKey((k) => k + 1)}
           />
         ))}
       </div>
