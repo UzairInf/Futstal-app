@@ -16,6 +16,9 @@ import OwnerBookings from './pages/owner/OwnerBookings.jsx'
 import Grounds from './pages/Grounds.jsx'
 import GroundDetails from './pages/GroundDetails.jsx'
 import MyBookings from './pages/MyBookings.jsx'
+import FindOpponent from './pages/FindOpponent.jsx'
+import RequestCreate from './pages/opponents/RequestCreate.jsx'
+import MyRequests from './pages/opponents/MyRequests.jsx'
 
 export default function App() {
   return (
@@ -28,6 +31,9 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/become-owner" element={<BecomeOwner />} />
+          <Route path="/opponents" element={<FindOpponent />} />
+          <Route path="/opponents/new" element={<RequestCreate />} />
+          <Route path="/opponents/mine" element={<MyRequests />} />
           <Route path="/grounds" element={<Grounds />} />
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/grounds/:id" element={<GroundDetails />} />

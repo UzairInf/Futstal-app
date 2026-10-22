@@ -25,7 +25,7 @@ export async function createBooking({ groundId, start, hours, phone, email, note
 export async function listMyBookings(userId) {
   const { data, error } = await supabase
     .from('bookings')
-    .select('*, grounds(name, area, address, is_active)')
+    .select('*, grounds(name, area, address, is_active, team_size)')
     .eq('player_id', userId) // owners can also read bookings at their grounds, so filter explicitly
     .order('start_at', { ascending: false })
     .limit(100) // pagination comes in Phase 11

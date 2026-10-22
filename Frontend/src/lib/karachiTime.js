@@ -43,3 +43,13 @@ export function weekStart(dateStr) {
   const mondayIndex = (utcMidnight(dateStr).getUTCDay() + 6) % 7
   return addDays(dateStr, -mondayIndex)
 }
+
+// Label for a day in a picker: Today, Tomorrow, or "Fri, Oct 23"
+export function dayLabel(dateStr, today) {
+  if (dateStr === today) return 'Today'
+  if (dateStr === addDays(today, 1)) return 'Tomorrow'
+  return `${weekdayShort(dateStr)}, ${monthShort(dateStr)} ${dayOfMonth(dateStr)}`
+}
+
+// Combine a Karachi date and time ('2026-10-23', '20:00') into a timestamp string
+export const toKarachiIso = (dateStr, timeStr) => `${dateStr}T${timeStr}:00+05:00`

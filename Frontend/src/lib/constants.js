@@ -38,3 +38,14 @@ export const PRICE_LIMITS = [2000, 3000, 4000, 5000, 6000, 8000, 10000]
 
 export const PHONE_RE = /^[0-9+() -]{7,20}$/
 export const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
+export const SKILL_LEVELS = [
+  { value: 'casual', label: 'Casual' },
+  { value: 'intermediate', label: 'Intermediate' },
+  { value: 'competitive', label: 'Competitive' },
+]
+
+export const SKILL_LABELS = Object.fromEntries(SKILL_LEVELS.map((s) => [s.value, s.label]))
+
+// Match durations in minutes: 30 minutes up to 6 hours
+export const DURATION_OPTIONS = Array.from({ length: 12 }, (_, i) => (i + 1) * 30)

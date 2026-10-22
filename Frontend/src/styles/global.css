@@ -732,3 +732,58 @@ textarea:focus {
 .booking-when { font-weight: 600; }
 .booking-ref { margin-top: 0.5rem; font-size: 0.75rem; color: var(--color-muted); }
 .cancel-form { margin-top: 0.75rem; }
+
+/* ---------- Find opponent ---------- */
+.requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.request-card p { margin: 0 0 0.35rem; }
+.request-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.request-top h3 { margin: 0; }
+.request-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.request-when { font-weight: 600; }
+.host-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.request-card .tag-list { margin: 0.5rem 0; }
+.request-card .btn-small { margin-top: 0.5rem; }
+
+.mode-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mode-card span { font-size: 0.85rem; color: var(--color-muted); }
+.mode-card:hover { border-color: var(--color-primary); }
+.mode-card.selected { border-color: var(--color-primary); background: #e8f5ee; }
+
+@media (max-width: 600px) {
+  .mode-options { grid-template-columns: 1fr; }
+}
