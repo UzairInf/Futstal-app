@@ -20,6 +20,7 @@ import FindOpponent from './pages/FindOpponent.jsx'
 import RequestCreate from './pages/opponents/RequestCreate.jsx'
 import MyRequests from './pages/opponents/MyRequests.jsx'
 import MyResponses from './pages/opponents/MyResponses.jsx'
+import MyMatches from './pages/opponents/MyMatches.jsx'
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/opponents/new" element={<RequestCreate />} />
           <Route path="/opponents/mine" element={<MyRequests />} />
           <Route path="/opponents/responses" element={<MyResponses />} />
+          <Route path="/opponents/matches" element={<MyMatches />} />
           <Route path="/grounds" element={<Grounds />} />
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/grounds/:id" element={<GroundDetails />} />
