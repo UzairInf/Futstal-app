@@ -30,7 +30,11 @@ export default function GroundForm({ ground, submitLabel, onSubmit }) {
 
     // Free preview URLs when the form closes
     const previewsRef = useRef([])
-    previewsRef.current = newPhotos
+
+    useEffect(() => {
+        previewsRef.current = newPhotos
+    }, [newPhotos])
+
     useEffect(() => {
         return () => previewsRef.current.forEach((p) => URL.revokeObjectURL(p.preview))
     }, [])

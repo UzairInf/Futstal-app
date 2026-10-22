@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom'
 
 const CANCEL_WINDOW_MS = 12 * 3600e3
 const MAX_HOURS = 24
+const nowMs = () => Date.now()
 
 // Works out the new selection after a tap on slot number `i`.
 // A selection is { from, to } (slot positions, inclusive) or null.
@@ -120,13 +121,11 @@ export default function BookingForm({ ground }) {
     if (next === sel) return
     setError('')
     setConfirmed(null)
-    setSelection(
-      next && {
-        ...next,
-        cancellable:
-          new Date(slots[next.from].slot_start).getTime() - Date.now() >= CANCEL_WINDOW_MS,
-      }
-    )
+    const now = nowMs()
+    setSelection((next) => ({
+      ...next,
+      cancellable: new Date(slots[next.from].slot_start).getTime() - now >= CANCEL_WINDOW_MS,
+    }))
   }
 
   async function handleSubmit(e) {
@@ -231,12 +230,12 @@ export default function BookingForm({ ground }) {
       <div>
         <div className="week-header">
           <button type="button" className="week-arrow" aria-label="Previous week"
-                  onClick={() => changeWeek(-1)} disabled={!canGoPrev}>‹</button>
+            onClick={() => changeWeek(-1)} disabled={!canGoPrev}>‹</button>
           <span className="week-label">
             {monthShort(weekDays[0])} {dayOfMonth(weekDays[0])} – {monthShort(weekDays[6])} {dayOfMonth(weekDays[6])}
           </span>
           <button type="button" className="week-arrow" aria-label="Next week"
-                  onClick={() => changeWeek(1)} disabled={!canGoNext}>›</button>
+            onClick={() => changeWeek(1)} disabled={!canGoNext}>›</button>
         </div>
 
         <div className="week-days">

@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../../hooks/useToast.js'
+import NotificationDropdown from '../notifications/NotificationDropdown.jsx'
 
 export default function Navbar() {
     const { user, profile, loading, signOut } = useAuth()
@@ -45,6 +46,7 @@ export default function Navbar() {
                             )}
                             <NavLink to="/bookings" className="nav-link">My bookings</NavLink>
                             <NavLink to="/opponents/matches" className="nav-link">My matches</NavLink>
+                            <NotificationDropdown />
                             <NavLink to="/profile" className="nav-link">Profile</NavLink>
                             <button type="button" className="btn btn-outline" onClick={handleLogout}>
                                 Log out
