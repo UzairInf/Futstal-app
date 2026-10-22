@@ -787,3 +787,49 @@ textarea:focus {
 @media (max-width: 600px) {
   .mode-options { grid-template-columns: 1fr; }
 }
+
+
+/* ---------- Responding to requests (Phase 7) ---------- */
+.respond-box { margin-top: 0.5rem; }
+.respond-form {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+.response-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+.response-list h4 { margin: 0; }
+.response-row {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+.response-row p { margin: 0.5rem 0 0; }
+.response-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.response-who { display: flex; align-items: center; gap: 0.5rem; }
+.response-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.response-actions .btn-small,
+.respond-form .btn-small { margin-top: 0; }
+.contact-box {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #b7dfc8;
+  border-radius: 8px;
+  background: #e8f5ee;
+  color: #0f5a32;
+}
+.contact-box p { margin: 0.25rem 0 0; }
+.contact-box a { color: inherit; font-weight: 600; }

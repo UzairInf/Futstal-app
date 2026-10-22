@@ -7,3 +7,6 @@ export function formatDuration(minutes) {
 
 export const minutesBetween = (startIso, endIso) =>
   Math.round((new Date(endIso).getTime() - new Date(startIso).getTime()) / 60000)
+
+
+export const phoneHref = (phone) => `tel:${phone.replace(/[^0-9+]/g, '')}`
