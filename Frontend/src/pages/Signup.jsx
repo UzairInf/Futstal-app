@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient.js'
 import { useAuth } from '../hooks/useAuth.js'
 import { PageLoader, Spinner } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
+import AuthShell, { PasswordInput } from '../components/auth/AuthShell.jsx'
 import { AREAS } from '../lib/constants.js'
 
 export default function Signup() {
@@ -22,14 +23,14 @@ export default function Signup() {
     // "Check your email" screen after a successful signup
     if (sentTo) {
         return (
-            <div className="card auth-card">
+            <AuthShell>
                 <h1>Check your email</h1>
-                <p>
+                <p className="auth-sub">
                     We sent a verification link to <strong>{sentTo}</strong>. Click it to
                     activate your account, then log in.
                 </p>
-                <Link to="/login" className="btn">Go to login</Link>
-            </div>
+                <Link to="/login" className="btn btn-block">Go to login</Link>
+            </AuthShell>
         )
     }
 
@@ -72,8 +73,11 @@ export default function Signup() {
     }
 
     return (
-        <div className="card auth-card">
+        <AuthShell>
             <h1>Create your account</h1>
+            <p className="auth-sub">
+                Already have an account? <Link to="/login">Log in</Link>
+            </p>
             <ErrorMessage message={error} />
 
             <form onSubmit={handleSubmit}>
@@ -84,6 +88,7 @@ export default function Signup() {
                         type="text"
                         autoComplete="name"
                         maxLength={80}
+                        placeholder="Your full name"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         required
@@ -96,6 +101,7 @@ export default function Signup() {
                         id="email"
                         type="email"
                         autoComplete="email"
+                        placeholder="you@example.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -119,11 +125,11 @@ export default function Signup() {
 
                 <div className="form-group">
                     <label htmlFor="password">Password</label>
-                    <input
+                    <PasswordInput
                         id="password"
-                        type="password"
                         autoComplete="new-password"
                         minLength={8}
+                        placeholder="At least 8 characters"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -138,6 +144,6 @@ export default function Signup() {
             <p className="auth-switch">
                 Already have an account? <Link to="/login">Log in</Link>
             </p>
-        </div>
+        </AuthShell>
     )
 }

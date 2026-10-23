@@ -5,6 +5,7 @@ import App from './App.jsx'
 import ToastProvider from './components/ui/ToastProvider.jsx'
 import AuthProvider from './components/auth/AuthProvider.jsx'
 import './styles/global.css'
+import './styles/redesign.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

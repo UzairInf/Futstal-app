@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth.js'
 import { useToast } from '../hooks/useToast.js'
 import { PageLoader, Spinner } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
+import AuthShell, { PasswordInput } from '../components/auth/AuthShell.jsx'
 
 export default function Login() {
   const { user, loading: authLoading } = useAuth()
@@ -67,8 +68,12 @@ export default function Login() {
   }
 
   return (
-    <div className="card auth-card">
+    <AuthShell>
       <h1>Log in</h1>
+      <p className="auth-sub">
+        New here? <Link to="/signup">Create an account</Link>
+      </p>
+
       {location.state?.from && (
         <div className="alert alert-info" role="status">Please log in to continue.</div>
       )}
@@ -92,6 +97,7 @@ export default function Login() {
             id="email"
             type="email"
             autoComplete="email"
+            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -100,10 +106,10 @@ export default function Login() {
 
         <div className="form-group">
           <label htmlFor="password">Password</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -118,6 +124,6 @@ export default function Login() {
       <p className="auth-switch">
         New here? <Link to="/signup">Create an account</Link>
       </p>
-    </div>
+    </AuthShell>
   )
 }

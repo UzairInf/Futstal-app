@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../../hooks/useToast.js'
 import NotificationDropdown from '../notifications/NotificationDropdown.jsx'
+import { BallIcon } from '../ui/FutsalArt.jsx'
 
 export default function Navbar() {
     const { user, profile, loading, signOut } = useAuth()
@@ -25,7 +26,10 @@ export default function Navbar() {
     return (
         <header className="navbar">
             <div className="navbar-inner">
-                <Link to="/" className="navbar-brand">⚽ Futsal Finder</Link>
+                <Link to="/" className="navbar-brand">
+                    <span className="brand-mark"><BallIcon /></span>
+                    <span className="brand-name">Futsal Finder</span>
+                </Link>
 
                 <button
                     type="button"
@@ -46,37 +50,46 @@ export default function Navbar() {
                         if (e.target.closest('a')) setMenuOpen(false)
                     }}
                 >
-                    <NavLink to="/" end className="nav-link">Home</NavLink>
-                    <NavLink to="/grounds" className="nav-link">Grounds</NavLink>
-                    <NavLink to="/opponents" className="nav-link">Find opponent</NavLink>
+                    <div className="navbar-center">
+                        <NavLink to="/" end className="nav-link">Home</NavLink>
+                        <NavLink to="/grounds" className="nav-link">Grounds</NavLink>
+                        <NavLink to="/opponents" end className="nav-link">Find opponent</NavLink>
 
-                    {!loading && !user && (
-                        <>
-                            <NavLink to="/login" className="nav-link">Log in</NavLink>
-                            <NavLink to="/signup" className="nav-link">Sign up</NavLink>
-                        </>
-                    )}
+                        {!loading && user && (
+                            <>
+                                <NavLink to="/bookings" className="nav-link">My bookings</NavLink>
+                                <NavLink to="/opponents/matches" className="nav-link">My matches</NavLink>
+                                {profile?.role === 'owner' && (
+                                    <NavLink to="/owner/grounds" className="nav-link">My grounds</NavLink>
+                                )}
+                                {profile?.role === 'owner' && (
+                                    <NavLink to="/owner/bookings" className="nav-link">Ground bookings</NavLink>
+                                )}
+                                {profile?.role === 'admin' && (
+                                    <NavLink to="/admin/reports" className="nav-link">Admin</NavLink>
+                                )}
+                            </>
+                        )}
+                    </div>
 
-                    {!loading && user && (
-                        <>
-                            {profile?.role === 'admin' && (
-                                <NavLink to="/admin/reports" className="nav-link">Admin</NavLink>
-                            )}
-                            {profile?.role === 'owner' && (
-                                <NavLink to="/owner/grounds" className="nav-link">My grounds</NavLink>
-                            )}
-                            {profile?.role === 'owner' && (
-                                <NavLink to="/owner/bookings" className="nav-link">Ground bookings</NavLink>
-                            )}
-                            <NavLink to="/bookings" className="nav-link">My bookings</NavLink>
-                            <NavLink to="/opponents/matches" className="nav-link">My matches</NavLink>
-                            <NotificationDropdown />
-                            <NavLink to="/profile" className="nav-link">Profile</NavLink>
-                            <button type="button" className="btn btn-outline" onClick={handleLogout}>
-                                Log out
-                            </button>
-                        </>
-                    )}
+                    <div className="navbar-actions">
+                        {!loading && !user && (
+                            <>
+                                <NavLink to="/login" className="nav-link">Log in</NavLink>
+                                <Link to="/signup" className="btn">Sign up</Link>
+                            </>
+                        )}
+
+                        {!loading && user && (
+                            <>
+                                <NotificationDropdown />
+                                <NavLink to="/profile" className="nav-link">Profile</NavLink>
+                                <button type="button" className="btn btn-outline" onClick={handleLogout}>
+                                    Log out
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </nav>
             </div>
         </header>
