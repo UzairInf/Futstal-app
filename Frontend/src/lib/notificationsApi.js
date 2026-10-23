@@ -18,6 +18,11 @@ export async function markNotificationRead(notificationId) {
   if (error) throw error
 }
 
+export async function markAllNotificationsRead() {
+  const { error } = await supabase.rpc('mark_all_notifications_read')
+  if (error) throw error
+}
+
 export function subscribeToNotifications(userId, handlers) {
   const channel = supabase
     .channel(`notifications:${userId}`)

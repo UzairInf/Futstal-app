@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.js'
 import { useToast } from '../../hooks/useToast.js'
 import {
   fetchNotifications,
+  markAllNotificationsRead,
   markNotificationRead,
   subscribeToNotifications,
 } from '../../lib/notificationsApi.js'
@@ -20,14 +21,54 @@ function relativeTime(isoString) {
   return `${diffDay}d ago`
 }
 
+// Where each notification type takes the user when clicked (null = just mark as read)
+const DESTINATIONS = {
+  new_response: '/opponents/mine',
+  response_withdrawn: '/opponents/mine',
+  response_accepted: '/opponents/matches',
+  match_cancelled: '/opponents/matches',
+  new_rating: '/opponents/matches',
+  response_rejected: '/opponents/responses',
+  request_closed: '/opponents/responses',
+  booking_new: '/owner/bookings',
+  booking_cancelled_by_player: '/owner/bookings',
+  booking_cancelled_by_owner: '/bookings',
+  owner_request_new: '/admin/owner-requests',
+  owner_request_approved: '/owner/grounds',
+  owner_request_rejected: '/become-owner',
+  owner_revoked: '/profile',
+  report_new: '/admin/reports',
+  report_reviewed: null,
+}
+
+const ICONS = {
+  new_response: '🙋',
+  response_withdrawn: '↩️',
+  response_accepted: '✅',
+  match_cancelled: '❌',
+  new_rating: '⭐',
+  response_rejected: '🚫',
+  request_closed: '🔒',
+  booking_new: '📅',
+  booking_cancelled_by_player: '📅',
+  booking_cancelled_by_owner: '📅',
+  owner_request_new: '📝',
+  owner_request_approved: '🎉',
+  owner_request_rejected: '📝',
+  owner_revoked: '⚠️',
+  report_new: '⚑',
+  report_reviewed: '⚑',
+}
+
+// These change the user's role, so the cached profile must be reloaded when one arrives
+const ROLE_CHANGING = new Set(['owner_request_approved', 'owner_revoked'])
+
 function destinationFor(notification) {
-  if (notification.type === 'new_response') return '/opponents/mine'
-  if (notification.type === 'response_accepted') return '/opponents/matches'
-  return null
+  return DESTINATIONS[notification.type] ?? null
 }
 
 export default function NotificationDropdown() {
-  const { user } = useAuth()
+  const { user, refreshProfile } = useAuth()
   const toast = useToast()
   const navigate = useNavigate()
 
@@ -59,6 +100,7 @@ export default function NotificationDropdown() {
         setState((prev) =>
           prev.key === userId ? { ...prev, data: [row, ...prev.data] } : prev
         )
+        if (ROLE_CHANGING.has(row.type)) refreshProfile()
       },
       onUpdate: (row) => {
         setState((prev) =>
@@ -73,7 +115,7 @@ export default function NotificationDropdown() {
       cancelled = true
       unsubscribe()
     }
-  }, [userId])
+  }, [userId, refreshProfile])
 
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -122,6 +164,21 @@ export default function NotificationDropdown() {
     if (dest) navigate(dest)
   }
 
+  async function handleMarkAll() {
+    const previous = state
+    setState((prev) =>
+      prev.key === userId
+        ? { ...prev, data: prev.data.map((n) => ({ ...n, is_read: true })) }
+        : prev
+    )
+    try {
+      await markAllNotificationsRead()
+    } catch (err) {
+      toast.error(err.message)
+      setState(previous)
+    }
+  }
+
   if (!userId) return null
 
   return (
@@ -143,6 +200,11 @@ export default function NotificationDropdown() {
         <div className="notification-panel" role="dialog" aria-label="Notifications">
           <div className="notification-panel-head">
             <strong>Notifications</strong>
+            {unreadCount > 0 && (
+              <button type="button" className="link-button" onClick={handleMarkAll}>
+                Mark all as read
+              </button>
+            )}
           </div>
 
           {loading && <p className="notification-empty">Loading…</p>}
@@ -166,7 +228,9 @@ export default function NotificationDropdown() {
                     }
                     onClick={() => handleClick(n)}
                   >
-                    <span className="notification-item-title">{n.title}</span>
+                    <span className="notification-item-title">
+                      {ICONS[n.type] ? `${ICONS[n.type]} ` : ''}{n.title}
+                    </span>
                     <span className="notification-item-body">{n.body}</span>
                     <span className="notification-item-time">{relativeTime(n.created_at)}</span>
                   </button>
