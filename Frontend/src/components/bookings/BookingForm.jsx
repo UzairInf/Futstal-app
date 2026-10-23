@@ -121,11 +121,15 @@ export default function BookingForm({ ground }) {
     if (next === sel) return
     setError('')
     setConfirmed(null)
+    if (!next) {
+      setSelection(null)
+      return
+    }
     const now = nowMs()
-    setSelection((next) => ({
+    setSelection({
       ...next,
       cancellable: new Date(slots[next.from].slot_start).getTime() - now >= CANCEL_WINDOW_MS,
-    }))
+    })
   }
 
   async function handleSubmit(e) {
