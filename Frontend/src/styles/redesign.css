@@ -779,3 +779,185 @@
 }
 
 .auth-visual-caption h2 { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
+
+/* =====================================================================
+   Premium light system — shared application surfaces
+   Presentation-only overrides. Existing markup, routes and interactions
+   intentionally remain unchanged.
+   ===================================================================== */
+:root {
+  --color-bg: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-text: #10231b;
+  --color-muted: #6b7b74;
+  --color-border: #e1e9e4;
+  --color-primary: #16794b;
+  --color-primary-dark: #0e5d39;
+  --color-success: #16794b;
+  --shadow: 0 10px 30px rgba(15, 61, 42, 0.06);
+  --rd-line: #e1e9e4;
+  --rd-sand: #f3f6f4;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% -10%, rgba(214, 241, 223, 0.55), transparent 30rem),
+    var(--color-bg);
+  color: var(--color-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+button,
+input,
+select,
+textarea { font-family: inherit; }
+
+::selection { background: #cdeecf; color: var(--rd-ink); }
+
+.app-main:not(.app-main-wide) {
+  padding-top: 1.25rem;
+  padding-bottom: 2.5rem;
+}
+
+.app-main:not(.app-main-wide) > * > .page-header,
+.app-main:not(.app-main-wide) > .page-header {
+  margin-bottom: 1.35rem;
+}
+
+.page-header h1,
+.page-header h2,
+.page-header h3 {
+  color: var(--rd-ink);
+  letter-spacing: -0.035em;
+}
+
+.page-header p { color: var(--color-muted); }
+
+.card,
+.filters,
+.details-grid > .card,
+.form-card {
+  border-color: var(--rd-line);
+  border-radius: var(--rd-radius-md);
+  box-shadow: var(--shadow);
+}
+
+.card { padding: 1.35rem; }
+
+.btn {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(15, 61, 42, 0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(15, 61, 42, 0.16);
+}
+
+.btn.btn-outline {
+  background: #fff;
+  border-color: var(--rd-line);
+  color: var(--rd-forest);
+  box-shadow: none;
+}
+
+.btn.btn-outline:hover:not(:disabled) { background: var(--rd-sand); }
+
+input,
+select,
+textarea {
+  border-color: var(--rd-line);
+  border-radius: 12px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #66ad84;
+  box-shadow: 0 0 0 4px rgba(102, 173, 132, 0.14);
+}
+
+.filters {
+  background: rgba(255, 255, 255, 0.82);
+  padding: 1.1rem;
+}
+
+.grounds-grid,
+.requests-grid { gap: 1.25rem; }
+
+.listing-card,
+.request-card,
+.booking-card,
+.response-row {
+  border-color: var(--rd-line);
+  border-radius: var(--rd-radius-md);
+  box-shadow: 0 8px 24px rgba(15, 61, 42, 0.05);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.listing-card:hover,
+.request-card:hover,
+.booking-card:hover {
+  border-color: #c7ddd0;
+  box-shadow: 0 14px 30px rgba(15, 61, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.listing-body { padding: 1.15rem; }
+
+.tag {
+  background: #f1f6f3;
+  border-color: #dce9e1;
+  color: #3e5d4e;
+}
+
+.badge,
+.tab-count { letter-spacing: 0.01em; }
+
+.tabs {
+  gap: 0.35rem;
+  border-bottom-color: var(--rd-line);
+}
+
+.tab { border-radius: 10px 10px 0 0; }
+.tab:hover { background: var(--rd-sand); }
+
+.day-chip,
+.slot,
+.mode-card,
+.week-arrow {
+  border-color: var(--rd-line);
+  border-radius: 12px;
+}
+
+.day-chip.selected,
+.slot.selected,
+.mode-card.selected {
+  background: var(--rd-forest);
+  border-color: var(--rd-forest);
+}
+
+.notification-bell {
+  border-radius: 10px;
+  transition: background 160ms ease;
+}
+
+.notification-bell:hover { background: var(--rd-sand); }
+
+.notification-panel {
+  border-color: var(--rd-line);
+  border-radius: var(--rd-radius-md);
+  box-shadow: 0 18px 44px rgba(11, 42, 31, 0.14);
+}
+
+.notification-item.is-unread { background: #eef8f1; }
+
+@media (max-width: 600px) {
+  .app-main:not(.app-main-wide) { padding-top: 0.85rem; }
+  .card { padding: 1.1rem; }
+  .page-header { align-items: flex-start; }
+}
