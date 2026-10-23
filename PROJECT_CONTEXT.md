@@ -1,9 +1,10 @@
 PROJECT_CONTEXT.md — Futsal Opponent Finder (Karachi)
 Primary context document for AI coding agents. Read this fully before changing anything.
-- Snapshot date: 2026-10-22
+- Context updated: 2026-10-23
+- Code verification baseline: 2026-10-22 (commit d5c08ef; Phase 10 proposal details added on 2026-10-23, not confirmed against a newer commit)
 - Repo: https://github.com/UzairInf/Futstal-app (note the spelling: Futstal)
 - Code verified against commit: d5c08ef — "Complete Phase 9: Ratings and Reputation" (only commit visible in a shallow clone; earlier history not inspected)
-- Database verified against: introspection query outputs supplied by the project owner (tables, constraints, indexes, generated-column expressions, function signatures + bodies, triggers, table RLS policies and flags, table/column grants, Storage object policies and buckets, extensions, role counts, Realtime publication membership, and anon/PUBLIC table-grant query results).
+- Database verification baseline: introspection query outputs supplied by the project owner as of 2026-10-22 (tables, constraints, indexes, generated-column expressions, function signatures + bodies, triggers, table RLS policies and flags, table/column grants, Storage object policies and buckets, extensions, role counts, Realtime publication membership, and anon/PUBLIC table-grant query results). No Phase 10 SQL changes have been verified as applied.
 Legend: ✅ verified from code or DB output · ⚠️ inferred (reasoned, not directly confirmed) · ❓ unknown (not available; do not assume)
 
 0. TL;DR for agents
@@ -12,7 +13,7 @@ Legend: ✅ verified from code or DB output · ⚠️ inferred (reasoned, not di
 3. All schema changes are run by the owner manually in the Supabase SQL Editor. Agents must output numbered SQL for the owner to run, never assume it was applied, and ask for output when verification is needed.
 4. Times are always Asia/Karachi (UTC+5) in both the DB functions and the frontend helpers.
 5. Never request or write secrets. Only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are used by the frontend.
-6. Do not start building a new phase until the owner says to proceed. Current state: Phases 1–9 complete; Phase 10 (Notifications) is next.
+6. Do not start a new phase until the owner says to proceed. Current state: Phases 1–9 complete. Phase 10 notification SQL/frontend implementation has been supplied for review, but is not verified or confirmed applied.
 1. Project overview and goals
 What it is: A web app for futsal players in Karachi, Pakistan to (a) browse and book futsal grounds, (b) post "I need an opponent" match requests, (c) respond to / accept opponents, (d) track match history, and (e) rate opponents to build reputation. Ground owners list grounds and manage bookings against them. An admin approves owner applications. ✅
 
@@ -25,7 +26,7 @@ Phase	Goal (as given by owner)	Status
 1–7	❓ not provided. Code shows: auth, profiles + avatars, owner application + admin review, ground CRUD + photos, ground browse/filter, booking + availability, opponent requests/responses/accept	✅ implemented in code (phase numbering ⚠️ inferred)
 8	Match History and Status — My Matches page, upcoming/past, cancellation + completion rules, auto-complete after booking end, opponent + ground details, prevent unauthorized status changes	✅ done (see §9 note: "completed" is derived, not stored)
 9	Ratings and Reputation — 1–5 stars, optional review, showed-up flag, averages/reputation, public player stats, no duplicate/fake ratings	✅ done
-10	Notifications — notify host on join request, notify responder on accept, notifications page/dropdown, mark as read, Supabase Realtime, permission tests	❌ not started (no notifications table exists)
+10	Notifications — DB notifications, dropdown, read state, Supabase Realtime, permission tests	⚠️ implementation proposal supplied; not verified/applied. The last known DB introspection did not include public.notifications; the supplied SQL assumes it exists and is not ready to run as-is.
 11	Final testing, security audit, RLS audit, pagination/perf, mobile responsiveness, prod build, abuse reporting + owner-management process, deployment/migration docs	❌ not started
 
 
@@ -137,7 +138,7 @@ Notes ✅: /grounds and /opponents are behind login, but the Navbar shows "Groun
 - My matches (Phase 8): tabs Upcoming/Past/Cancelled via list_my_matches; opponent info + phones (upcoming); cancel before start; "Happening now" badge.
 - Ratings (Phase 9): on past matches: rate opponent 1–5, showed-up yes/no, optional review (≤500; only the rated player sees it); view rating the opponent gave you.
 - Public player profile (/players/:id): name, area, bio, member since, matches played, average rating and show-up rate (only after ≥ 3 ratings), via RPC get_player_stats. Reviews are not public.
-- Notifications (Phase 10): ❌ not implemented. Realtime: ❌ no supabase.channel(...) usage anywhere in the frontend.
+- Notifications (Phase 10): ⚠️ Claude supplied proposed notificationsApi.js, NotificationDropdown.jsx, a small CSS addition, and Supabase SQL. These changes are not confirmed present in the repo or applied to Supabase. Current route list has no /admin/reports route. Realtime: no prior verified implementation; test the proposed subscription only after DB setup is resolved.
 - Home page: minimal placeholder (heading + two buttons). Footer: static text.
 5. Supabase setup and database schema
 Everything here is ✅ from the owner's introspection output unless marked. Schema public. No migration files exist in the repo.
@@ -166,6 +167,8 @@ id uuid NN PK · match_id uuid NN → match_responses(id) CASCADE · rater_id uu
 
 owner_requests
 id uuid NN PK · user_id uuid NN default auth.uid() → profiles CASCADE · phone text NN · message text NN · status text NN default 'pending' · admin_note text · reviewed_by uuid → auth.users(id) SET NULL · reviewed_at timestamptz · created_at timestamptz NN default now()
+
+Phase 10 schema note: the last supplied introspection listed these seven application tables only. It did not include public.notifications or public.reports. The Phase 10 proposal assumes both tables exist; treat their existence as ❓ until fresh introspection confirms otherwise. Do not infer their columns, RLS, constraints, or grants.
 5.3 Check / unique / exclusion constraints ✅ (names as in DB)
 - bookings: status IN ('confirmed','cancelled'); (status='cancelled') = (cancelled_at IS NOT NULL); duration between 1 h and 24 h; start_at and end_at on the hour; hourly_price 100–100000; total_price = hourly_price * hours; phone regex ^[0-9+() -]{7,20}$; email regex + ≤254 chars; notes ≤300; cancel_reason ≤300; bookings_no_overlap: EXCLUDE USING gist (ground_id WITH =, during WITH &&) WHERE (status='confirmed') (prevents double booking).
 - grounds: name 3–80; address 5–200; area 1–60; description ≤1000; hourly_price 100–100000; team_size 3–11; photos ≤ 6; grounds_photos_owner: photo_paths_valid(owner_id, photo_paths) (each path must start with <owner_id>/ and not contain ..); amenities ⊆ {floodlights, parking, washroom, changing_room, drinking_water, cafe, seating, first_aid, wifi}, ≤ 9.
@@ -346,7 +349,56 @@ Typical flows
 3. Cancel booking cascades: cancel_booking → triggers cancel accepted matches (system) and close open requests → pending responses become closed.
 4. After match ends: either participant calls rate_match once; stats derive from match_ratings.
 5. Owner onboarding: player inserts owner_requests → admin review_owner_request(approve) → role becomes owner → user's AuthProvider picks it up via refreshProfile (BecomeOwner page does this when it sees an approved request).
-Realtime: not used. All pages fetch on mount and on explicit reloadKey bumps.
+Realtime before Phase 10: not used. All existing pages fetch on mount and on explicit reloadKey bumps. The Phase 10 proposal adds a Supabase Realtime subscription for notification INSERT/UPDATE events, but its table/publication configuration is unverified.
+9.1 Phase 10 — Notifications proposal and verification status
+Status: proposal supplied by Claude; the context owner has not confirmed that the SQL was executed or that the frontend replacements were committed. Treat every item in this subsection as proposed, not as current live behavior. Do not claim Phase 10 is complete until the SQL, files, security checks, and end-to-end tests are verified.
+
+Proposed frontend files
+File	Proposed behavior
+Frontend/src/lib/notificationsApi.js	Fetches the latest 50 notifications; calls mark_notification_read and mark_all_notifications_read; subscribes to public.notifications INSERT/UPDATE events filtered to the signed-in user.
+Frontend/src/components/notifications/NotificationDropdown.jsx	Bell button, unread-count badge (display capped as 9+), notification list, relative timestamps, click-to-navigate behavior, mark-one/all-as-read actions, optimistic updates with rollback on errors, Realtime refresh/update handling, outside-click close, and profile refresh for owner-role changes.
+Frontend/src/styles/global.css	Adds .notification-panel-head flex styling so the heading and “Mark all as read” action align across the panel header.
+
+
+These paths and behaviors come from the supplied proposal, not a repo inspection after implementation. Check the actual files and imports before integrating them.
+
+Proposed notification types
+
+The supplied SQL updates notifications_type_check to allow these 16 values: new_response, response_accepted, response_rejected, response_withdrawn, request_closed, match_cancelled, new_rating, booking_new, booking_cancelled_by_player, booking_cancelled_by_owner, owner_request_new, owner_request_approved, owner_request_rejected, owner_revoked, report_new, report_reviewed. This is only the proposed allowed type list. The supplied trigger list does not appear to implement all listed types: in particular, the new_response and response_accepted events need explicit verification/implementation.
+
+Database changes described by the proposal
+- Alters the existing notifications_type_check constraint and makes notifications.link_request_id and notifications.link_response_id nullable.
+- Adds a notify_user(uuid,text,text,text,uuid,uuid) helper marked SECURITY DEFINER with an empty search_path, and revokes direct execution from PUBLIC, anon, and authenticated. The helper is intended for server-side trigger use.
+- Adds trigger functions for response status changes, rating creation, booking creation/cancellation, owner application creation/review, owner revocation, and report creation/review.
+The implied event-to-source mapping in the proposal is:
+Proposed notification type(s)	Proposed source/event
+response_rejected, response_withdrawn, request_closed, match_cancelled	match_responses status transitions
+new_rating	new match_ratings row
+booking_new, booking_cancelled_by_player, booking_cancelled_by_owner	booking creation/cancellation
+owner_request_new, owner_request_approved, owner_request_rejected	owner_requests insert/review
+owner_revoked	owner role revocation/update
+report_new, report_reviewed	reports insert/review, if that table and feature exist
+new_response, response_accepted	Included in the proposed constraint, but their actual trigger/event implementation is unclear and must be verified
+
+
+- Adds mark_all_notifications_read() and grants it to authenticated after revoking execution from PUBLIC/anon; it should only update unread notifications belonging to auth.uid().
+- The submitted SQL modifies existing objects and does not create public.notifications or public.reports. The last known database inventory listed seven application tables and did not include either table. Verify both tables, their columns, constraints, grants, RLS policies, and ownership before adapting/running the SQL.
+Known mismatches/blockers to resolve before applying the proposal
+1. Missing base table: the last known introspection says public.notifications does not exist, while the submitted SQL immediately alters its constraint/columns and trigger setup assumes the table exists. The schema/table creation, foreign keys, indexes, RLS, minimal grants, and required read policy must be designed and reviewed first. Do not run the submitted SQL unchanged.
+2. Potential missing reports table: the proposed report triggers reference public.reports, which is not in the previous seven-table schema. Confirm whether it exists and what its real columns/status values are. If abuse reporting is not implemented yet, omit report triggers until a separately designed reports feature exists.
+3. Missing single-read RPC: notificationsApi.js calls mark_notification_read(p_notification_id), but the supplied SQL description only defines mark_all_notifications_read(). Check whether the single-read RPC exists elsewhere. If not, add a narrowly scoped function that checks auth.uid() and updates only the caller's notification; do not grant broad table UPDATE access as a workaround.
+4. Incomplete event coverage: new_response and response_accepted are accepted by the proposed check constraint but are not clearly emitted by the described triggers. Verify events and avoid duplicate notifications when one state change fires multiple triggers.
+5. Trigger-count discrepancy: the supplied SQL appears to explicitly create/drop 9 trg_notify% triggers, but the supplied verification note expects 11 rows. Count the actual triggers and reconcile the expected count with the final SQL before treating verification as successful.
+6. Realtime is not configured in the known DB snapshot: the prior supabase_realtime publication membership query returned no rows. Verify that the publication exists and that public.notifications is included before expecting live events. Ensure Realtime changes remain limited to authorized data and that each client's subscription is filtered by its own user ID.
+7. Route mismatch: the proposed navigation maps some event types to /admin/reports, but the existing verified App.jsx route table has no /admin/reports route and there is no existing abuse-report UI. Add a guarded route only if that feature is actually built; otherwise provide a valid destination or non-navigable notification behavior. Verify every other notification destination against the actual route table.
+8. RLS/privacy: notifications must be readable only by their recipient. Read-state updates must be limited to that recipient. Notification titles/messages must not include responder_phone, host_phone, booking contact details, or other sensitive payloads. Test with two different accounts, including direct API attempts.
+Required verification before marking Phase 10 done
+- Get fresh SQL introspection output for the notification/report tables, columns, constraints, foreign keys, indexes, RLS enabled state and policies, table/column grants, function signatures/bodies/EXECUTE grants, triggers, and Realtime publication membership.
+- Apply only a reviewed, complete SQL script that creates any missing schema objects and defines both mark-read RPCs with recipient checks. Ask the owner to run it manually and paste back the requested verification output.
+- Confirm notificationsApi.js imports the correct existing Supabase client and that the dropdown is mounted in the shared layout/navbar without breaking logged-out, player, owner, or admin navigation.
+- Run npm run lint and npm run build from Frontend/.
+- Test create, list, unread count, mark one read, mark all read, Realtime insert/update, reconnect/cleanup, click destinations, errors/rollback, owner-role refresh, and all expected trigger events. Test at least two accounts for isolation and ensure no contact details leak.
+- Update this context with the actual commit hash, SQL execution confirmation, real trigger count, route destinations, and test results. Until then, Phase 10 status stays ⚠️ pending verification.
 10. Dependencies and coding conventions (observed ✅)
 - JS/JSX, ES modules, no semicolons, single quotes. Indentation is mixed (2 spaces in most files; 4 spaces in Signup.jsx, Profile.jsx, FindOpponent.jsx, GroundForm.jsx, MyGrounds.jsx, groundsApi.js, Navbar.jsx). Match the file you edit.
 - File names: components PascalCase.jsx; lib camelCase.js; API wrappers named <domain>Api.js; imports always include the .js/.jsx extension.
@@ -384,7 +436,7 @@ Time zone	Asia/Karachi hard-coded (DB + frontend)
 Verified from code/DB
 1. Team-size mismatch: DB allows 3–11 (grounds, match_requests, RPC), frontend TEAM_SIZES = [5,6,7,8].
 2. No pagination: hard limits — grounds 60, open requests 60, bookings 100, my requests 100, my responses 100, responses to my requests 300, my matches 200, admin owner requests 100 (comments: "pagination comes in Phase 11").
-3. Notifications and Realtime do not exist (Phase 10).
+3. Phase 10 is not verified/applied. The existing DB snapshot had no notifications table and no Realtime publication members. Claude supplied a proposed SQL/frontend implementation, but it has the blockers listed in §9.1: missing assumed base tables/RPC, incomplete event coverage, route mismatch, and trigger-count discrepancy.
 4. Schema is not version-controlled. No SQL/migration files in repo; function comments reference a "section 9a" of an SQL script that is not in the repo.
 5. Frontend/.env.example is empty. Frontend/README.md is the stock Vite README. index.html references /favicon.svg but there is no public/ folder (404 favicon); page title is "futsal-app".
 6. window.supabase = supabase left in supabaseClient.js (debug).
@@ -400,7 +452,7 @@ Verified from code/DB
 16. Open requests overlap not checked on creation (overlap is only checked at accept time).
 17. No automated tests, no CI. ESLint is configured (npm run lint).
 18. Orphaned storage files are cleaned up best-effort only (failures are swallowed).
-Outstanding decisions (❓ ask the owner): notification event list and retention for Phase 10; whether a "completed" status should ever be stored; whether admin creation needs a UI; abuse-report workflow; separate dev/prod Supabase projects; production domain/SMTP.
+Outstanding decisions (❓ ask the owner): notification retention; whether to include abuse-report notifications before the reports feature exists; whether a "completed" status should ever be stored; whether admin creation needs a UI; abuse-report workflow; separate dev/prod Supabase projects; production domain/SMTP. The proposed notification event list is recorded in §9.1 but is not yet validated against the actual triggers and routes.
 14. Security considerations
 Design strengths (✅): RLS on every table; client write access minimized by column grants; all state changes in SECURITY DEFINER functions with search_path='', row locks (FOR UPDATE/FOR SHARE) and ownership checks; phone numbers masked until a match is accepted; role not client-writable; match_ratings fully closed to direct access; DB-level constraints mirror client validation; trigger-based cascades keep state consistent; exclusion constraint prevents double booking.
 
@@ -434,9 +486,20 @@ Frontend work
 13. Match the indentation/style of the file being edited; keep single quotes/no semicolons.
 14. Run npm run lint and npm run build before declaring work done.
 
-Phase 10 notes (guidance, ⚠️ not verified decisions)
-15. All relevant events already pass through RPCs/triggers (respond_to_match_request, accept_match_response, reject_match_response, cancel_match, booking-cancel triggers), so notifications can be inserted DB-side without client-controlled writes. A notifications table needs RLS user_id = auth.uid() for SELECT, a narrow UPDATE (mark read) via RPC or column grant. The supabase_realtime publication membership query returned no rows (see Appendix A); verify the publication exists and add required tables as part of the reviewed SQL plan. Do not leak responder_phone/host_phone in notification payloads.
-16. Test every new policy with two different accounts (player A cannot see player B's rows).
-17. The existing supabase_realtime publication membership query returned no rows. Before relying on Realtime for Phase 10, verify the publication exists and add the intended table(s) to it as part of the reviewed SQL plan; do not assume Realtime subscriptions will receive database changes.
+Phase 10 notes (⚠️ proposal supplied; implementation not verified)
+15. Read §9.1 before touching notifications. The proposed Claude SQL is not executable as supplied against the last known DB snapshot because it alters public.notifications without creating that table; it also references public.reports, whose existence is unverified.
+16. notificationsApi.js calls both mark_notification_read(p_notification_id) and mark_all_notifications_read(). The supplied SQL only describes the second RPC. Verify/implement both with auth.uid() checks; never loosen table grants to make the UI work.
+17. The proposed allowed type list has 16 types, but the described triggers do not clearly emit new_response and response_accepted. The SQL trigger count is also inconsistent (9 described create/drop names vs 11 expected rows in its own verification note). Resolve both discrepancies against the actual SQL.
+18. The last known supabase_realtime publication membership query returned no rows. Confirm publication existence and membership, then test INSERT/UPDATE delivery with user-scoped subscriptions.
+19. Existing verified routes do not include /admin/reports. Verify all notification destinations against App.jsx and do not add a route unless the corresponding feature and role guard exist.
+20. Test every new policy with two different accounts. Notification payloads must never expose responder_phone, host_phone, booking contact details, or other sensitive fields.
 
 After finishing a phase: update this file (§1 table, §4.4, §5, §6, §13, §14) so it stays the source of truth.
+Appendix A — Remaining context gaps
+The following four database introspection queries have now been run and their outputs incorporated above:
+- A1 Storage object policies: six policies returned; see §8.
+- A2 Generated columns: grounds.is_24h and bookings.during both reported is_generated = ALWAYS; exact expressions are documented in §5.2.
+- A3 Realtime publication membership: the query returned no rows. The intended Phase 10 table(s) are not currently listed in the supabase_realtime publication output. Verify publication existence/configuration and add membership through a reviewed SQL change when implementing Realtime.
+- A4 anon / PUBLIC table grants: the query returned no rows for grants on tables in schema public. This result does not assess function EXECUTE privileges, Storage policies, or other schemas.
+- A5 Phase 10 notifications proposal: proposed frontend/SQL behavior has been recorded in §9.1, but no fresh database verification or implementation confirmation was provided. The prior introspection omitted notifications and reports, and Realtime publication membership was empty. Re-run database checks after the reviewed migration is actually applied.
+Still unverified from the Supabase/Vercel dashboards (no SQL): Auth email-confirmation setting; Site URL and Redirect URLs; SMTP provider/configuration; Vercel project root directory; whether required environment variable names are configured per deployment environment; production URL/domain. Never include secret values in this file.
