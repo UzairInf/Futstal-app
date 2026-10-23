@@ -6,6 +6,9 @@ import { PageLoader, Spinner } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import { listMyBookings, cancelBooking } from '../lib/bookingsApi.js'
 import { formatDay, formatTime, formatRange } from '../lib/karachiTime.js'
+import LoadMore from '../components/ui/LoadMore.jsx'
+import { PAGE_SIZE } from '../lib/constants.js'
+import { fullAddress } from '../lib/placeFormat.js'
 import { BOOKING_TABS, bookingBadge, bucketOf, groupBookings } from '../lib/bookingStatus.js'
 
 const CANCEL_WINDOW_MS = 12 * 3600e3
@@ -41,7 +44,7 @@ function BookingCard({ booking, now, userId, busy, onCancel }) {
         <span className={`badge ${badge.cls}`}>{badge.text}</span>
       </div>
 
-      {ground && <p className="muted">📍 {ground.address}, {ground.area}</p>}
+      {ground && <p className="muted">📍 {fullAddress(ground.address, ground.area)}</p>}
 
       <p className="booking-when">
         {formatDay(booking.start_at)} · {formatRange(booking.start_at, booking.end_at)}
@@ -83,25 +86,27 @@ export default function MyBookings() {
   const { user } = useAuth()
   const toast = useToast()
 
-  const [state, setState] = useState({ loading: true, bookings: [], now: 0, error: '' })
+  const [limit, setLimit] = useState(PAGE_SIZE)
+  const [state, setState] = useState({ loading: true, limit: PAGE_SIZE, hasMore: false, bookings: [], now: 0, error: '' })
   const [reloadKey, setReloadKey] = useState(0)
   const [tab, setTab] = useState('upcoming')
   const [busyId, setBusyId] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    listMyBookings(user.id)
-      .then((bookings) => {
-        if (!cancelled) setState({ loading: false, bookings, now: Date.now(), error: '' })
+    listMyBookings(user.id, limit)
+      .then((rows) => {
+        if (!cancelled) {
+          setState({ loading: false, limit, hasMore: rows.length > limit, bookings: rows.slice(0, limit), now: Date.now(), error: '' })
+        }
       })
       .catch((err) => {
-        if (!cancelled) setState({ loading: false, bookings: [], now: 0, error: err.message })
+        if (!cancelled) setState({ loading: false, limit, hasMore: false, bookings: [], now: 0, error: err.message })
       })
     return () => { cancelled = true }
-  }, [user.id, reloadKey])
-
+  }, [user.id, limit, reloadKey])
   function retry() {
-    setState({ loading: true, bookings: [], now: 0, error: '' })
+    setState({ loading: true, limit, hasMore: false, bookings: [], now: 0, error: '' })
     setReloadKey((k) => k + 1)
   }
 
@@ -172,6 +177,13 @@ export default function MyBookings() {
           onCancel={handleCancel}
         />
       ))}
+
+      <LoadMore
+        hasMore={state.hasMore}
+        loading={state.limit !== limit}
+        onClick={() => setLimit((l) => l + PAGE_SIZE)}
+        label="Load older bookings"
+      />
     </div>
   )
 }

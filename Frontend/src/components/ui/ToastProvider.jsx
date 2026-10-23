@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { ToastContext } from '../../context/toastContext.js'
+import { friendlyMessage } from '../../lib/errors.js'
 
 export default function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
@@ -21,7 +22,7 @@ export default function ToastProvider({ children }) {
   const api = useMemo(
     () => ({
       success: (message) => show('success', message, 4000),
-      error: (message) => show('error', message, 6000),
+      error: (message) => show('error', friendlyMessage(message), 6000),
       info: (message) => show('info', message, 4000),
     }),
     [show]

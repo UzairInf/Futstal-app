@@ -163,7 +163,11 @@ export default function Profile() {
                     <Link to="/become-owner" className="btn btn-outline">Become a ground owner</Link>
                 )}
                 {profile.role === 'admin' && (
-                    <Link to="/admin/owner-requests" className="btn btn-outline">Review owner requests</Link>
+                   <>
+                        <Link to="/admin/owner-requests" className="btn btn-outline">Review owner requests</Link>
+                        <Link to="/admin/reports" className="btn btn-outline">Reports</Link>
+                        <Link to="/admin/owners" className="btn btn-outline">Manage owners</Link>
+                    </>
                 )}
                 {profile.role === 'owner' && (
                     <Link to="/owner/grounds" className="btn btn-outline">Manage my grounds</Link>

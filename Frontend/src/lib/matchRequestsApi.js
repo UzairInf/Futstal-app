@@ -6,7 +6,7 @@ const WITH_HOST = '*, profiles(full_name, area, avatar_url)'
 // A Karachi calendar day (YYYY-MM-DD) as a UTC timestamp
 const dayStart = (dateStr) => new Date(`${dateStr}T00:00:00+05:00`).toISOString()
 
-export async function listOpenRequests(userId, { area, skill, teamSize, date, verifiedOnly } = {}) {
+export async function listOpenRequests(userId, { area, skill, teamSize, date, verifiedOnly, limit = 24 } = {}) {
   let query = supabase
     .from('match_requests')
     .select(WITH_HOST)
@@ -14,7 +14,7 @@ export async function listOpenRequests(userId, { area, skill, teamSize, date, ve
     .neq('host_id', userId) // your own requests live on the My requests page
     .gt('starts_at', new Date().toISOString())
     .order('starts_at', { ascending: true })
-    .limit(60) // pagination comes in Phase 11
+    .limit(limit + 1)
 
   if (area) query = query.eq('area', area)
   if (skill) query = query.eq('skill_level', skill)

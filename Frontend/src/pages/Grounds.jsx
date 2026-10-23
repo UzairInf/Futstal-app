@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom'
 import { PageLoader } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import GroundListCard from '../components/grounds/GroundListCard.jsx'
-import { AREAS, TEAM_SIZES, PRICE_LIMITS } from '../lib/constants.js'
+import LoadMore from '../components/ui/LoadMore.jsx'
+import { AREAS, TEAM_SIZES, PRICE_LIMITS, PAGE_SIZE } from '../lib/constants.js'
 import { listActiveGrounds } from '../lib/groundsApi.js'
 
 // Ignore hand-edited URL values that aren't real options
@@ -19,25 +20,31 @@ export default function Grounds() {
   const maxPrice = pick(params.get('max'), PRICE_LIMITS)
   const open24h = params.get('open24') === '1'
   const hasFilters = Boolean(area || teamSize || maxPrice || open24h)
-
   const filterKey = [area, teamSize, maxPrice, open24h].join('|')
-  const [result, setResult] = useState({ key: null, grounds: [], error: '' })
+
+  const [limit, setLimit] = useState(PAGE_SIZE)
+  const [result, setResult] = useState({ key: null, limit: PAGE_SIZE, grounds: [], hasMore: false, error: '' })
   const [reloadKey, setReloadKey] = useState(0)
   const loading = result.key !== filterKey
+  const loadingMore = !loading && !result.error && result.limit !== limit
 
   useEffect(() => {
     let cancelled = false
-    listActiveGrounds({ area, teamSize, maxPrice, open24h })
-      .then((grounds) => {
-        if (!cancelled) setResult({ key: filterKey, grounds, error: '' })
+    listActiveGrounds({ area, teamSize, maxPrice, open24h, limit })
+      .then((rows) => {
+        if (!cancelled) {
+          setResult({ key: filterKey, limit, grounds: rows.slice(0, limit), hasMore: rows.length > limit, error: '' })
+        }
       })
       .catch((err) => {
-        if (!cancelled) setResult({ key: filterKey, grounds: [], error: err.message })
+        if (!cancelled) setResult({ key: filterKey, limit, grounds: [], hasMore: false, error: err.message })
       })
     return () => { cancelled = true }
-  }, [area, teamSize, maxPrice, open24h, filterKey, reloadKey])
+  }, [area, teamSize, maxPrice, open24h, filterKey, limit, reloadKey])
+
 
   function setFilter(name, value) {
+    setLimit(PAGE_SIZE)
     setParams(
       (prev) => {
         const next = new URLSearchParams(prev)
@@ -50,6 +57,7 @@ export default function Grounds() {
   }
 
   function clearFilters() {
+    setLimit(PAGE_SIZE)
     setParams({}, { replace: true })
   }
 
@@ -81,13 +89,18 @@ export default function Grounds() {
     content = (
       <>
         <p className="muted">
-          {result.grounds.length} ground{result.grounds.length === 1 ? '' : 's'} found
+          {result.grounds.length}{result.hasMore ? '+' : ''} ground{result.grounds.length === 1 ? '' : 's'} found
         </p>
         <div className="grounds-grid">
           {result.grounds.map((g) => (
             <GroundListCard key={g.id} ground={g} />
           ))}
         </div>
+        <LoadMore
+          hasMore={result.hasMore}
+          loading={loadingMore}
+          onClick={() => setLimit((l) => l + PAGE_SIZE)}
+        />
       </>
     )
   }
@@ -133,6 +146,7 @@ export default function Grounds() {
         </label>
 
         {hasFilters && (
+
           <button type="button" className="btn btn-outline" onClick={clearFilters}>
             Clear filters
           </button>

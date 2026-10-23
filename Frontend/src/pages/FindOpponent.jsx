@@ -4,7 +4,9 @@ import { useAuth } from '../hooks/useAuth.js'
 import { PageLoader } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import RequestCard from '../components/opponents/RequestCard.jsx'
-import { AREAS, TEAM_SIZES, SKILL_LEVELS } from '../lib/constants.js'
+import LoadMore from '../components/ui/LoadMore.jsx'
+import ReportButton from '../components/reports/ReportButton.jsx'
+import { AREAS, TEAM_SIZES, SKILL_LEVELS, PAGE_SIZE } from '../lib/constants.js'
 import { listOpenRequests } from '../lib/matchRequestsApi.js'
 import { todayInKarachi, addDays, dayLabel } from '../lib/karachiTime.js'
 import RequestRespond from '../components/opponents/RequestRespond.jsx'
@@ -30,9 +32,11 @@ export default function FindOpponent() {
     const hasFilters = Boolean(area || skill || teamSize || date || verifiedOnly)
 
     const filterKey = [area, skill, teamSize, date, verifiedOnly].join('|')
-    const [result, setResult] = useState({ key: null, requests: [], error: '' })
+    const [limit, setLimit] = useState(PAGE_SIZE)
+    const [result, setResult] = useState({ key: null, limit: PAGE_SIZE, requests: [], hasMore: false, error: '' })
     const [reloadKey, setReloadKey] = useState(0)
     const loading = result.key !== filterKey
+    const loadingMore = !loading && !result.error && result.limit !== limit
 
 
     // Requests I already responded to (request id -> true)
@@ -54,17 +58,20 @@ export default function FindOpponent() {
 
     useEffect(() => {
         let cancelled = false
-        listOpenRequests(user.id, { area, skill, teamSize, date, verifiedOnly })
-            .then((requests) => {
-                if (!cancelled) setResult({ key: filterKey, requests, error: '' })
+        listOpenRequests(user.id, { area, skill, teamSize, date, verifiedOnly, limit })
+            .then((rows) => {
+                if (!cancelled) {
+                    setResult({ key: filterKey, limit, requests: rows.slice(0, limit), hasMore: rows.length > limit, error: '' })
+                }
             })
             .catch((err) => {
-                if (!cancelled) setResult({ key: filterKey, requests: [], error: err.message })
+                if (!cancelled) setResult({ key: filterKey, limit, requests: [], hasMore: false, error: err.message })
             })
         return () => { cancelled = true }
-    }, [user.id, area, skill, teamSize, date, verifiedOnly, filterKey, reloadKey])
+    }, [user.id, area, skill, teamSize, date, verifiedOnly, filterKey, limit, reloadKey])
 
     function setFilter(name, value) {
+        setLimit(PAGE_SIZE)
         setParams(
             (prev) => {
                 const next = new URLSearchParams(prev)
@@ -77,6 +84,7 @@ export default function FindOpponent() {
     }
 
     function clearFilters() {
+        setLimit(PAGE_SIZE)
         setParams({}, { replace: true })
     }
 
@@ -110,7 +118,7 @@ export default function FindOpponent() {
         content = (
             <>
                 <p className="muted">
-                    {result.requests.length} open request{result.requests.length === 1 ? '' : 's'}
+                    {result.requests.length}{result.hasMore ? '+' : ''} open request{result.requests.length === 1 ? '' : 's'}
                 </p>
                 <div className="requests-grid">
                     {result.requests.map((r) => (
@@ -120,9 +128,15 @@ export default function FindOpponent() {
                                 responded={Boolean(responded[r.id])}
                                 onResponded={markResponded}
                             />
+                            <ReportButton targetType="request" targetId={r.id} />
                         </RequestCard>
                     ))}
                 </div>
+                <LoadMore
+                    hasMore={result.hasMore}
+                    loading={loadingMore}
+                    onClick={() => setLimit((l) => l + PAGE_SIZE)}
+                />
             </>
         )
     }

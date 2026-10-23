@@ -69,6 +69,9 @@ export default function Login() {
   return (
     <div className="card auth-card">
       <h1>Log in</h1>
+      {location.state?.from && (
+        <div className="alert alert-info" role="status">Please log in to continue.</div>
+      )}
       <ErrorMessage message={error} />
 
       {unverified && (

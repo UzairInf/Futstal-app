@@ -1,27 +1,31 @@
+import { lazy } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/layout/Layout.jsx'
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx'
 import RoleRoute from './components/auth/RoleRoute.jsx'
-import Home from './pages/Home.jsx'
-import Login from './pages/Login.jsx'
-import Signup from './pages/Signup.jsx'
-import Profile from './pages/Profile.jsx'
-import BecomeOwner from './pages/BecomeOwner.jsx'
-import AdminOwnerRequests from './pages/AdminOwnerRequests.jsx'
-import NotFound from './pages/NotFound.jsx'
-import MyGrounds from './pages/owner/MyGrounds.jsx'
-import GroundCreate from './pages/owner/GroundCreate.jsx'
-import GroundEdit from './pages/owner/GroundEdit.jsx'
-import OwnerBookings from './pages/owner/OwnerBookings.jsx'
-import Grounds from './pages/Grounds.jsx'
-import GroundDetails from './pages/GroundDetails.jsx'
-import MyBookings from './pages/MyBookings.jsx'
-import FindOpponent from './pages/FindOpponent.jsx'
-import RequestCreate from './pages/opponents/RequestCreate.jsx'
-import MyRequests from './pages/opponents/MyRequests.jsx'
-import MyResponses from './pages/opponents/MyResponses.jsx'
-import MyMatches from './pages/opponents/MyMatches.jsx'
-import PlayerProfile from './pages/PlayerProfile.jsx'
+
+const Home = lazy(() => import('./pages/Home.jsx'))
+const Login = lazy(() => import('./pages/Login.jsx'))
+const Signup = lazy(() => import('./pages/Signup.jsx'))
+const Profile = lazy(() => import('./pages/Profile.jsx'))
+const BecomeOwner = lazy(() => import('./pages/BecomeOwner.jsx'))
+const AdminOwnerRequests = lazy(() => import('./pages/AdminOwnerRequests.jsx'))
+const NotFound = lazy(() => import('./pages/NotFound.jsx'))
+const MyGrounds = lazy(() => import('./pages/owner/MyGrounds.jsx'))
+const GroundCreate = lazy(() => import('./pages/owner/GroundCreate.jsx'))
+const GroundEdit = lazy(() => import('./pages/owner/GroundEdit.jsx'))
+const OwnerBookings = lazy(() => import('./pages/owner/OwnerBookings.jsx'))
+const Grounds = lazy(() => import('./pages/Grounds.jsx'))
+const GroundDetails = lazy(() => import('./pages/GroundDetails.jsx'))
+const MyBookings = lazy(() => import('./pages/MyBookings.jsx'))
+const FindOpponent = lazy(() => import('./pages/FindOpponent.jsx'))
+const RequestCreate = lazy(() => import('./pages/opponents/RequestCreate.jsx'))
+const MyRequests = lazy(() => import('./pages/opponents/MyRequests.jsx'))
+const MyResponses = lazy(() => import('./pages/opponents/MyResponses.jsx'))
+const MyMatches = lazy(() => import('./pages/opponents/MyMatches.jsx'))
+const PlayerProfile = lazy(() => import('./pages/PlayerProfile.jsx'))
+const AdminReports = lazy(() => import('./pages/AdminReports.jsx'))
+const AdminOwners = lazy(() => import('./pages/AdminOwners.jsx'))
 
 export default function App() {
   return (
@@ -53,6 +57,8 @@ export default function App() {
 
           <Route element={<RoleRoute allow={['admin']} />}>
             <Route path="/admin/owner-requests" element={<AdminOwnerRequests />} />
+            <Route path="/admin/reports" element={<AdminReports />} />
+            <Route path="/admin/owners" element={<AdminOwners />} />
           </Route>
         </Route>
 

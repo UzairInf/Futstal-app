@@ -10,4 +10,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-window.supabase = supabase
+
+// Debug handle for the browser console. Never exposed in production builds.
+if (import.meta.env.DEV) window.supabase = supabase

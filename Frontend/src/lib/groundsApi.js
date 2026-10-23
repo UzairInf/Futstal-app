@@ -124,32 +124,32 @@ export async function deleteGround(ground) {
     await removePhotos(ground.photo_paths)
 }
 
-export async function listActiveGrounds({ area, teamSize, maxPrice, open24h } = {}) {
-  let query = supabase
-    .from('grounds')
-    .select('*')
-    .eq('is_active', true) // explicit, so an owner's own inactive grounds never show up here
-    .order('created_at', { ascending: false })
-    .limit(60) // pagination comes in Phase 11
+export async function listActiveGrounds({ area, teamSize, maxPrice, open24h, limit = 24 } = {}) {
+    let query = supabase
+        .from('grounds')
+        .select('*')
+        .eq('is_active', true) // explicit, so an owner's own inactive grounds never show up here
+        .order('created_at', { ascending: false })
+        .limit(limit + 1) // one extra row tells the page whether there is more
 
-  if (area) query = query.eq('area', area)
-  if (teamSize) query = query.eq('team_size', Number(teamSize))
-  if (maxPrice) query = query.lte('hourly_price', Number(maxPrice))
-  if (open24h) query = query.eq('is_24h', true)
+    if (area) query = query.eq('area', area)
+    if (teamSize) query = query.eq('team_size', Number(teamSize))
+    if (maxPrice) query = query.lte('hourly_price', Number(maxPrice))
+    if (open24h) query = query.eq('is_24h', true)
 
-  const { data, error } = await query
-  if (error) throw error
-  return data
+    const { data, error } = await query
+    if (error) throw error
+    return data
 }
 
 export async function getActiveGround(id) {
-  if (!isUuid(id)) return null
-  const { data, error } = await supabase
-    .from('grounds')
-    .select('*')
-    .eq('id', id)
-    .eq('is_active', true)
-    .maybeSingle()
-  if (error) throw error
-  return data
+    if (!isUuid(id)) return null
+    const { data, error } = await supabase
+        .from('grounds')
+        .select('*')
+        .eq('id', id)
+        .eq('is_active', true)
+        .maybeSingle()
+    if (error) throw error
+    return data
 }

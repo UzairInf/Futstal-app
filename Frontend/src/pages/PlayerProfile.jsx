@@ -8,6 +8,7 @@ import { Stars } from '../components/ratings/StarRating.jsx'
 import { MIN_RATINGS_FOR_REPUTATION } from '../lib/constants.js'
 import { getPlayerStats } from '../lib/ratingsApi.js'
 import { KARACHI_TZ } from '../lib/karachiTime.js'
+import ReportButton from '../components/reports/ReportButton.jsx'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -97,6 +98,8 @@ export default function PlayerProfile() {
             : `${p.show_up_rate}% of rated matches`}
         </li>
       </ul>
+
+      {user && user.id !== p.player_id && <ReportButton targetType="player" targetId={p.player_id} />}
     </div>
   )
 }

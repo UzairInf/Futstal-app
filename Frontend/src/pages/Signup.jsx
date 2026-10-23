@@ -41,6 +41,7 @@ export default function Signup() {
         const cleanEmail = email.trim().toLowerCase()
 
         if (!cleanName) return setError('Please enter your name.')
+        if (cleanName.length > 80) return setError('Your name must be 80 characters or fewer.')
         if (!area) return setError('Please select your area.')
         if (password.length < 8) return setError('Password must be at least 8 characters.')
 
@@ -82,6 +83,7 @@ export default function Signup() {
                         id="fullName"
                         type="text"
                         autoComplete="name"
+                        maxLength={80}
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         required

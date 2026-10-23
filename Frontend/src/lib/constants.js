@@ -53,3 +53,18 @@ export const DURATION_OPTIONS = Array.from({ length: 12 }, (_, i) => (i + 1) * 3
 // Phase 9: ratings
 export const MIN_RATINGS_FOR_REPUTATION = 3
 export const REVIEW_MAX_LENGTH = 500
+
+
+// Phase 11
+export const PAGE_SIZE = 24
+
+export const REPORT_REASONS = [
+  { value: 'spam', label: 'Spam or fake listing' },
+  { value: 'fake_info', label: 'False or misleading information' },
+  { value: 'harassment', label: 'Harassment or abusive behaviour' },
+  { value: 'no_show', label: 'Did not show up / cancelled repeatedly' },
+  { value: 'inappropriate', label: 'Inappropriate content' },
+  { value: 'other', label: 'Something else' },
+]
+export const REPORT_REASON_LABELS = Object.fromEntries(REPORT_REASONS.map((r) => [r.value, r.label]))
+export const REPORT_DETAILS_MAX_LENGTH = 500

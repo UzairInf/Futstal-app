@@ -22,13 +22,13 @@ export async function createBooking({ groundId, start, hours, phone, email, note
   return data
 }
 
-export async function listMyBookings(userId) {
+export async function listMyBookings(userId, limit = 24) {
   const { data, error } = await supabase
     .from('bookings')
     .select('*, grounds(name, area, address, is_active, team_size)')
     .eq('player_id', userId) // owners can also read bookings at their grounds, so filter explicitly
     .order('start_at', { ascending: false })
-    .limit(100) // pagination comes in Phase 11
+    .limit(limit + 1)
   if (error) throw error
   return data
 }
@@ -42,13 +42,13 @@ export async function cancelBooking(id, reason = null) {
   return data
 }
 
-export async function listOwnerBookings(ownerId) {
+export async function listOwnerBookings(ownerId, limit = 24) {
   const { data, error } = await supabase
     .from('bookings')
     .select('*, grounds!inner(name, area, address, owner_id)')
     .eq('grounds.owner_id', ownerId) // an owner can also be a player elsewhere, so filter explicitly
     .order('start_at', { ascending: false })
-    .limit(100) // pagination comes in Phase 11
+    .limit(limit + 1)
   if (error) throw error
   return data
 }

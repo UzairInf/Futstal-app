@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
 import { PageLoader } from '../components/ui/Spinner.jsx'
 import ErrorMessage from '../components/ui/ErrorMessage.jsx'
 import PhotoCarousel from '../components/grounds/PhotoCarousel.jsx'
@@ -7,10 +6,15 @@ import { AMENITY_LABELS } from '../lib/constants.js'
 import { formatHours } from '../lib/groundHours.js'
 import { getActiveGround } from '../lib/groundsApi.js'
 import BookingForm from '../components/bookings/BookingForm.jsx'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth.js'
+import ReportButton from '../components/reports/ReportButton.jsx'
+import { fullAddress, mapsSearchUrl } from '../lib/placeFormat.js'
 
 export default function GroundDetails() {
   const { id } = useParams()
   const location = useLocation()
+  const { user } = useAuth()
   const backTo = `/grounds${location.state?.search ?? ''}`
 
   const [state, setState] = useState({ id: null, ground: null, error: '' })
@@ -49,9 +53,7 @@ export default function GroundDetails() {
     )
   }
 
-  const mapsUrl =
-    'https://www.google.com/maps/search/?api=1&query=' +
-    encodeURIComponent(`${g.address}, ${g.area}, Karachi`)
+  const mapsUrl = mapsSearchUrl(g)
 
   return (
     <div className="stack">
@@ -62,9 +64,9 @@ export default function GroundDetails() {
 
         <div className="card">
           <h1>{g.name}</h1>
-          <p className="muted">📍 {g.address}, {g.area}</p>
+          <p className="muted">📍 {fullAddress(g.address, g.area)}</p>
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-             className="btn btn-outline btn-small">
+            className="btn btn-outline btn-small">
             Open in Maps
           </a>
 
@@ -93,7 +95,9 @@ export default function GroundDetails() {
         <div className="card">
           <h3>About this ground</h3>
           <p className="pre-wrap">{g.description}</p>
+          {user && user.id !== g.owner_id && <ReportButton targetType="ground" targetId={g.id} />}
         </div>
+
       )}
     </div>
   )
