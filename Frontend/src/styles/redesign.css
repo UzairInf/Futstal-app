@@ -747,3 +747,35 @@
   .auth-visual-caption h2 { font-size: 1.35rem; }
   .auth-visual-caption p { display: none; }
 }
+
+/* ---------- Auth screen fixes ---------- */
+
+/* Panels fit the screen exactly (no extra scroll or gap underneath) */
+.app-main-wide:has(.auth-split) { padding-bottom: 0; }
+
+@media (min-width: 861px) {
+  .auth-split {
+    min-height: 100dvh;
+    padding: 14px 0;
+  }
+}
+
+/* Dark fade so the caption stays readable over the pitch lines */
+.auth-visual::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  z-index: 0;
+  background: linear-gradient(
+    to top,
+    rgba(4, 22, 13, 0.96) 0%,
+    rgba(4, 22, 13, 0.8) 35%,
+    rgba(4, 22, 13, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.auth-visual-caption h2 { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45); }
